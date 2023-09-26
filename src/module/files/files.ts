@@ -16,10 +16,7 @@ class Files {
 
     private async loadHttp() {
         const browser = await puppeteer.launch({
-            executablePath: undefined,
-            headless: 'new',
-            args: ['--no-sandbox',
-                '--disable-web-security'],
+            args: ['--no-sandbox', '--disable-web-security'],
         })
         const usecase = new Usecase(this.logger, browser)
         const handler = new Handler(this.logger, this.http, usecase)
@@ -29,6 +26,7 @@ class Files {
     private httpPublic(handler: Handler) {
         const Router = this.http.Router()
 
+        Router.get('/download/:filename', handler.Download())
         Router.post('/image', handler.Image())
         Router.post('/pdf', handler.Pdf())
 

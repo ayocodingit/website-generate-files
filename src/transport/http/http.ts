@@ -26,7 +26,8 @@ class Http {
     }
 
     private pageNotFound = () => {
-        this.app.get('*', (_: Request, res: Response) => {
+        this.app.get('*', (req: Request, res: Response, next: NextFunction) => {
+            if (req.originalUrl.search('download') > 1) return next()
             throw new Error(
                 statusCode.NOT_FOUND,
                 statusCode[statusCode.NOT_FOUND]
@@ -71,7 +72,7 @@ class Http {
         return {
             env: this.config.app.env,
             http_uri: req.originalUrl,
-            http_host: req.protocol + '://' + req.headers.host,
+            http_host: this.GetDomain(req),
             http_method: req.method,
             http_scheme: req.protocol,
             remote_addr: req.httpVersion,
@@ -79,6 +80,10 @@ class Http {
             tz: new Date(),
             code: statusCode,
         }
+    }
+
+    public GetDomain(req: Request) {
+        return req.protocol + '://' + req.headers.host
     }
 
     public Router() {

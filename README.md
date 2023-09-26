@@ -1,5 +1,5 @@
 # Website Generate Files
-
+Website Generate Files is a tool that makes it easy to take screenshots, generate PDFs and more from a website using a web URL that is free to access.
 
 ## Tech Stack
 
@@ -26,3 +26,14 @@ $ npm install
 ```bash
 $ cp .env.example .env
 ```
+
+4. Run on local
+
+```bash
+$ npm run start:dev
+```
+
+## Features
+1. Generate Pdf
+2. Screenshot
+3. Download

@@ -8,7 +8,6 @@ const main = async () => {
     const http = new Http(logger, config)
 
     // Start Load Module
-    
     new Files(logger, http, config)
 
     // End Load Module

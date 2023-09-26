@@ -1,22 +1,46 @@
 import { Browser } from 'puppeteer'
 import Logger from '../../../pkg/logger'
-import { RequestBody } from '../entity/interface'
+import { RequestImage, RequestPdf } from '../entity/interface'
+import fs from 'fs'
 
 class Usecase {
     constructor(private logger: Logger, private browser: Browser) {}
 
-    public async Image(body: RequestBody) {
-        const page = await this.browser.newPage()
-        await page.goto(body.url, { waitUntil: 'load' })
-        await page.screenshot({
-            path: `build/${Date.now()}-${Math.random()}.png`
-        })
-        await page.close()
-        return "berhasil"
+    private getPath(extension: string) {
+        return `public/${Date.now()}-${Math.random()}.${extension}`
     }
 
-    public async Pdf(body: RequestBody) {
-        return
+    public async Image({ url, property }: RequestImage) {
+        const path = this.getPath(property.extension)
+        const page = await this.browser.newPage()
+        await page.goto(url, { waitUntil: 'load' })
+        if (property.height && property.width) {
+            await page.setViewport({
+                height: property.height,
+                width: property.width,
+            })
+        }
+        await page.screenshot({ path })
+        await page.close()
+        return path
+    }
+
+    public async Pdf({ url, property }: RequestPdf) {
+        const path = this.getPath('pdf')
+
+        const page = await this.browser.newPage()
+        await page.goto(url, { waitUntil: 'load' })
+
+        const { format, margin } = property
+        const documentPdf = await page.pdf({
+            format,
+            margin,
+        })
+
+        fs.writeFileSync(path, documentPdf)
+
+        await page.close()
+        return path
     }
 }
 
