@@ -4,12 +4,15 @@ import Usecase from './usecase/usecase'
 import Handler from './delivery/http/handler'
 import { Config } from '../../config/config.interface'
 import puppeteer from 'puppeteer'
+import Jwt from '../../pkg/jwt'
+import { VerifyToken } from '../../transport/http/middleware/verifyAuth'
 
 class Files {
     constructor(
         private logger: Logger,
         private http: Http,
-        private config: Config
+        private config: Config,
+        private jwt: Jwt
     ) {
         this.loadHttp()
     }
@@ -19,14 +22,14 @@ class Files {
             args: ['--no-sandbox', '--disable-web-security'],
         })
         const usecase = new Usecase(this.logger, browser)
-        const handler = new Handler(this.logger, this.http, usecase)
+        const handler = new Handler(this.logger, this.http, usecase, this.jwt)
         this.httpPublic(handler)
     }
 
     private httpPublic(handler: Handler) {
         const Router = this.http.Router()
 
-        Router.get('/download/:filename', handler.Download())
+        Router.get('/download/:token', VerifyToken(this.jwt), handler.Download())
         Router.post('/image', handler.Image())
         Router.post('/pdf', handler.Pdf())
 

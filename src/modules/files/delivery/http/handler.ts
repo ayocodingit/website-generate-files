@@ -5,20 +5,20 @@ import { NextFunction, Request, Response } from 'express'
 import statusCode from '../../../../pkg/statusCode'
 import { ValidateFormRequest } from '../../../../helpers/validate'
 import { RequestImage, RequestPdf } from '../../entity/schema'
-import error from '../../../../pkg/error'
+import Jwt from '../../../../pkg/jwt'
 
 class Handler {
     constructor(
         private logger: Logger,
         private http: Http,
-        private usecase: Usecase
+        private usecase: Usecase,
+        private jwt: Jwt
     ) {}
 
     public Download() {
-        return async (req: Request, res: Response, next: NextFunction) => {
+        return async (req: any, res: Response, next: NextFunction) => {
             try {
-                const filename = req.params.filename
-                return res.download('public/' + filename, (err) => {
+                return res.download(req.user.path, (err) => {
                     if (err) {
                         this.logger.Error(statusCode[statusCode.NOT_FOUND], {
                             error: err.message,
@@ -55,9 +55,11 @@ class Handler {
                         statusCode.OK
                     ),
                 })
-
+                const accessToken = this.jwt.Sign({ path: result }, '1d')
                 return res.status(statusCode.OK).json({
-                    data: this.http.GetDomain(req) + '/' + result,
+                    data: {
+                        access_token: accessToken,
+                    },
                 })
             } catch (error) {
                 return next(error)
@@ -77,9 +79,11 @@ class Handler {
                         statusCode.OK
                     ),
                 })
-
+                const accessToken = this.jwt.Sign({ path: result }, '1d')
                 return res.status(statusCode.OK).json({
-                    data: this.http.GetDomain(req) + '/' + result,
+                    data: {
+                        access_token: accessToken,
+                    },
                 })
             } catch (error) {
                 return next(error)

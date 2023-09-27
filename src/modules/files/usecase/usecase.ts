@@ -12,8 +12,10 @@ class Usecase {
 
     public async Image({ url, property }: RequestImage) {
         const path = this.getPath(property.extension)
+
         const page = await this.browser.newPage()
         await page.goto(url, { waitUntil: 'load' })
+
         if (property.height && property.width) {
             await page.setViewport({
                 height: property.height,
@@ -22,6 +24,7 @@ class Usecase {
         }
         await page.screenshot({ path })
         await page.close()
+        
         return path
     }
 
