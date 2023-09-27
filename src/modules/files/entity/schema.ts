@@ -19,7 +19,7 @@ export const RequestPdf = Joi.object({
             bottom: Joi.string().default('113px'),
             left: Joi.string().default('113px'),
             right: Joi.string().default('76px'),
-        }),
+        }).default(),
     }).default(),
     seconds: Joi.number().default(1).optional(),
 })

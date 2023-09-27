@@ -44,6 +44,9 @@ class Usecase {
     public async Pdf({ url, property }: RequestPdf) {
         const { filename, path } = this.getFiles('pdf')
 
+        console.log(property);
+        
+
         const page = await this.browser.newPage()
         await page.goto(url, { waitUntil: 'networkidle0' })
 
