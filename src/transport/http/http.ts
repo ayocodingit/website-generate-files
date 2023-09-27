@@ -10,6 +10,7 @@ import Logger from '../../pkg/logger'
 
 class Http {
     private app: Express
+    public dir = 'public'
 
     constructor(private logger: Logger, private config: Config) {
         this.app = express()
@@ -23,13 +24,11 @@ class Http {
         this.app.use(bodyParser.json())
         this.app.use(helmet())
         this.app.use(compression())
+        this.app.use('/download', express.static('public'))
     }
 
     private pageNotFound = () => {
         this.app.get('*', (req: Request, res: Response, next: NextFunction) => {
-            if (req.originalUrl.search('/v1/download/') >= 0) {
-                return next()
-            }
             throw new Error(
                 statusCode.NOT_FOUND,
                 statusCode[statusCode.NOT_FOUND]

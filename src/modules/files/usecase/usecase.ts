@@ -4,17 +4,26 @@ import { RequestImage, RequestPdf } from '../entity/interface'
 import fs from 'fs'
 
 class Usecase {
-    constructor(private logger: Logger, private browser: Browser) {}
+    constructor(
+        private logger: Logger,
+        private browser: Browser,
+        private dir: string
+    ) {}
 
-    private getPath(extension: string) {
-        return `public/${Date.now()}-${Math.random()}.${extension}`
+    private getFiles(extension: string) {
+        const filename = `${Date.now()}-${Math.random()}.${extension}`
+        const path = this.dir + '/' + filename
+        return {
+            filename,
+            path,
+        }
     }
 
     public async Image({ url, property }: RequestImage) {
-        const path = this.getPath(property.extension)
+        const { filename, path } = this.getFiles(property.extension)
 
         const page = await this.browser.newPage()
-        await page.goto(url, { waitUntil: 'load' })
+        await page.goto(url, { waitUntil: 'networkidle0' })
 
         if (property.height && property.width) {
             await page.setViewport({
@@ -22,17 +31,21 @@ class Usecase {
                 width: property.width,
             })
         }
+
         await page.screenshot({ path })
         await page.close()
 
-        return path
+        return {
+            filename,
+            path,
+        }
     }
 
     public async Pdf({ url, property }: RequestPdf) {
-        const path = this.getPath('pdf')
+        const { filename, path } = this.getFiles('pdf')
 
         const page = await this.browser.newPage()
-        await page.goto(url, { waitUntil: 'load' })
+        await page.goto(url, { waitUntil: 'networkidle0' })
 
         const { format, margin } = property
         const documentPdf = await page.pdf({
@@ -43,7 +56,10 @@ class Usecase {
         fs.writeFileSync(path, documentPdf)
 
         await page.close()
-        return path
+        return {
+            filename,
+            path,
+        }
     }
 }
 

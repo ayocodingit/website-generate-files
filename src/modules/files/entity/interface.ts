@@ -5,6 +5,7 @@ export interface RequestImage {
         width: number
         extension: string
     }
+    seconds: number
 }
 
 export interface RequestPdf {
@@ -18,4 +19,5 @@ export interface RequestPdf {
             right: string
         }
     }
+    seconds: number
 }

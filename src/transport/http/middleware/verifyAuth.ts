@@ -12,7 +12,7 @@ export const VerifyToken = (jwt: Jwt) => {
             return next()
         } catch (err) {
             return res.status(statusCode.UNAUTHORIZED).json({
-                error: statusCode[statusCode.UNAUTHORIZED]
+                error: statusCode[statusCode.UNAUTHORIZED],
             })
         }
     }
