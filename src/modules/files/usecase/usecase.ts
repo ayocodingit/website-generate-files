@@ -24,7 +24,7 @@ class Usecase {
         }
         await page.screenshot({ path })
         await page.close()
-        
+
         return path
     }
 

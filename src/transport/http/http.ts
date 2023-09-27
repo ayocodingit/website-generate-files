@@ -27,7 +27,9 @@ class Http {
 
     private pageNotFound = () => {
         this.app.get('*', (req: Request, res: Response, next: NextFunction) => {
-            if (req.originalUrl.search('/v1/download/') >= 0) return next()
+            if (req.originalUrl.search('/v1/download/') >= 0) {
+                return next()
+            }
             throw new Error(
                 statusCode.NOT_FOUND,
                 statusCode[statusCode.NOT_FOUND]

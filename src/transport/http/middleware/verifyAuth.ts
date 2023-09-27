@@ -1,6 +1,6 @@
 import { NextFunction, Response } from 'express'
-import statusCode from '../../../pkg/statusCode'
 import Jwt from '../../../pkg/jwt'
+import statusCode from '../../../pkg/statusCode'
 
 export const VerifyToken = (jwt: Jwt) => {
     return (req: any, res: Response, next: NextFunction) => {
@@ -10,7 +10,7 @@ export const VerifyToken = (jwt: Jwt) => {
             const decode = jwt.Verify(token)
             req['user'] = decode
             return next()
-        } catch (error) {
+        } catch (err) {
             return res.status(statusCode.UNAUTHORIZED).json({
                 error: statusCode[statusCode.UNAUTHORIZED]
             })

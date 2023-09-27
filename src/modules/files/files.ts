@@ -28,8 +28,9 @@ class Files {
 
     private httpPublic(handler: Handler) {
         const Router = this.http.Router()
+        const verifyToken = VerifyToken(this.jwt)
 
-        Router.get('/download/:token', VerifyToken(this.jwt), handler.Download())
+        Router.get('/download/:token', verifyToken, handler.Download())
         Router.post('/image', handler.Image())
         Router.post('/pdf', handler.Pdf())
 
