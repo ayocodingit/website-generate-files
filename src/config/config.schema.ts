@@ -7,5 +7,4 @@ export default Joi.object({
         .default('local'),
     APP_PORT_HTTP: Joi.number().required(),
     APP_LOG: Joi.string().valid('info', 'error', 'warn').required(),
-    JWT_ACCESS_SECRET: Joi.string().required(),
 })
