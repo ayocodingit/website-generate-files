@@ -24,50 +24,53 @@ class Usecase {
     }
 
     public async Image({ url, property }: RequestImage) {
-        const { filename, path } = this.getFiles(property.extension)
         const browser = await this.getBrowser()
-        const page = await browser.newPage()
-        await page.goto(url, { waitUntil: 'load' })
+        try {
+            const { filename, path } = this.getFiles(property.extension)
+            const page = await browser.newPage()
+            await page.goto(url, { waitUntil: 'load' })
+            if (property.height && property.width) {
+                await page.setViewport({
+                    height: property.height,
+                    width: property.width,
+                })
+            }
 
-        if (property.height && property.width) {
-            await page.setViewport({
-                height: property.height,
-                width: property.width,
-            })
-        }
+            await page.screenshot({ path })
 
-        await page.screenshot({ path })
-        await page.close()
-        await browser.close()
-
-        return {
-            filename,
-            path,
+            return {
+                filename,
+                path,
+            }
+        } catch (error) {
+            throw error
+        } finally {
+            await browser.close()
         }
     }
 
     public async Pdf({ url, property }: RequestPdf) {
-        const { filename, path } = this.getFiles('pdf')
-
         const browser = await this.getBrowser()
+        try {
+            const { filename, path } = this.getFiles('pdf')
+            const page = await browser.newPage()
+            await page.goto(url, { waitUntil: 'load' })
+            const { format, margin } = property
+            const documentPdf = await page.pdf({
+                format,
+                margin,
+            })
 
-        const page = await browser.newPage()
-        await page.goto(url, { waitUntil: 'load' })
+            fs.writeFileSync(path, documentPdf)
 
-        const { format, margin } = property
-        const documentPdf = await page.pdf({
-            format,
-            margin,
-        })
-
-        fs.writeFileSync(path, documentPdf)
-
-        await page.close()
-        await browser.close()
-
-        return {
-            filename,
-            path,
+            return {
+                filename,
+                path,
+            }
+        } catch (error) {
+            throw error
+        } finally {
+            await browser.close()
         }
     }
 }
