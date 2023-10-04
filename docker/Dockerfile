@@ -21,9 +21,10 @@ RUN npm install --production
 RUN npm cache clean --force
 COPY --from=builder ./app/build ./build
 RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
-    && mkdir -p /home/pptruser/Downloads /app \
+    && mkdir -p /home/pptruser/Downloads /app /app/public \
     && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser /app
+    && chown -R pptruser:pptruser /app \
+    && chown -R pptruser:pptruser /app/public
 
 USER pptruser
 
