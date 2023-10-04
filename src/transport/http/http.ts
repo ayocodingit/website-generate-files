@@ -24,7 +24,7 @@ class Http {
         this.app.use(bodyParser.json())
         this.app.use(helmet())
         this.app.use(compression())
-        this.app.use('/download', express.static('public'))
+        this.app.use('/download', express.static(this.dir))
     }
 
     private pageNotFound = () => {
