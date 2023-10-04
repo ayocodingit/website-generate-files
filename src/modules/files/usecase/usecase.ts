@@ -8,13 +8,15 @@ class Usecase {
 
     private async getBrowser() {
         const browser = await puppeteer.launch({
-            args: ['--no-sandbox', '--disable-web-security'],
+            args: ['--no-sandbox'],
+            headless: true,
         })
 
         return browser
     }
 
     private getFiles(extension: string) {
+        if (!fs.existsSync(this.dir)) fs.mkdirSync(this.dir)
         const filename = `${Date.now()}-${Math.random()}.${extension}`
         const path = this.dir + '/' + filename
         return {
