@@ -1,14 +1,18 @@
-import { Browser } from 'puppeteer'
+import puppeteer, { Browser } from 'puppeteer'
 import Logger from '../../../pkg/logger'
 import { RequestImage, RequestPdf } from '../entity/interface'
 import fs from 'fs'
 
 class Usecase {
-    constructor(
-        private logger: Logger,
-        private browser: Browser,
-        private dir: string
-    ) {}
+    constructor(private logger: Logger, private dir: string) {}
+
+    private async getBrowser() {
+        const browser = await puppeteer.launch({
+            args: ['--no-sandbox', '--disable-web-security'],
+        })
+
+        return browser
+    }
 
     private getFiles(extension: string) {
         const filename = `${Date.now()}-${Math.random()}.${extension}`
@@ -21,9 +25,9 @@ class Usecase {
 
     public async Image({ url, property }: RequestImage) {
         const { filename, path } = this.getFiles(property.extension)
-
-        const page = await this.browser.newPage()
-        await page.goto(url, { waitUntil: 'networkidle0' })
+        const browser = await this.getBrowser()
+        const page = await browser.newPage()
+        await page.goto(url, { waitUntil: 'load' })
 
         if (property.height && property.width) {
             await page.setViewport({
@@ -34,6 +38,7 @@ class Usecase {
 
         await page.screenshot({ path })
         await page.close()
+        await browser.close()
 
         return {
             filename,
@@ -44,11 +49,10 @@ class Usecase {
     public async Pdf({ url, property }: RequestPdf) {
         const { filename, path } = this.getFiles('pdf')
 
-        console.log(property);
-        
+        const browser = await this.getBrowser()
 
-        const page = await this.browser.newPage()
-        await page.goto(url, { waitUntil: 'networkidle0' })
+        const page = await browser.newPage()
+        await page.goto(url, { waitUntil: 'load' })
 
         const { format, margin } = property
         const documentPdf = await page.pdf({
@@ -59,6 +63,8 @@ class Usecase {
         fs.writeFileSync(path, documentPdf)
 
         await page.close()
+        await browser.close()
+
         return {
             filename,
             path,

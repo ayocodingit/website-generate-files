@@ -3,7 +3,6 @@ import Logger from '../../pkg/logger'
 import Usecase from './usecase/usecase'
 import Handler from './delivery/http/handler'
 import { Config } from '../../config/config.interface'
-import puppeteer from 'puppeteer'
 import Jwt from '../../pkg/jwt'
 
 class Files {
@@ -17,10 +16,7 @@ class Files {
     }
 
     private async loadHttp() {
-        const browser = await puppeteer.launch({
-            args: ['--no-sandbox', '--disable-web-security'],
-        })
-        const usecase = new Usecase(this.logger, browser, this.http.dir)
+        const usecase = new Usecase(this.logger, this.http.dir)
         const handler = new Handler(this.logger, this.http, usecase, this.jwt)
         this.httpPublic(handler)
     }
