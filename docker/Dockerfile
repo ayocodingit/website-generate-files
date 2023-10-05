@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:12-alpine AS builder
+FROM --platform=linux/amd64 node:14.17.0-alpine AS builder
 WORKDIR /app
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 COPY package*.json ./
@@ -6,7 +6,7 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-FROM --platform=linux/amd64 node:12-alpine AS server
+FROM --platform=linux/amd64 node:14.17.0-alpine AS server
 WORKDIR /app
 COPY package*.json ./
 RUN apk add chromium \
