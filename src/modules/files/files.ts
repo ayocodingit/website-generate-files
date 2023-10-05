@@ -4,20 +4,21 @@ import Usecase from './usecase/usecase'
 import Handler from './delivery/http/handler'
 import { Config } from '../../config/config.interface'
 import Jwt from '../../pkg/jwt'
+import { Browser } from 'puppeteer'
 
 class Files {
     constructor(
         private logger: Logger,
         private http: Http,
         private config: Config,
-        private jwt: Jwt
+        private browser: Browser
     ) {
         this.loadHttp()
     }
 
     private async loadHttp() {
-        const usecase = new Usecase(this.logger, this.http.dir)
-        const handler = new Handler(this.logger, this.http, usecase, this.jwt)
+        const usecase = new Usecase(this.logger, this.http.dir, this.browser)
+        const handler = new Handler(this.logger, this.http, usecase)
         this.httpPublic(handler)
     }
 

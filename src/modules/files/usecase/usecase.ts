@@ -1,22 +1,15 @@
-import puppeteer, { Browser } from 'puppeteer'
+import { Browser } from 'puppeteer'
 import Logger from '../../../pkg/logger'
 import { RequestImage, RequestPdf } from '../entity/interface'
 import fs from 'fs'
-
 class Usecase {
-    constructor(private logger: Logger, private dir: string) {}
-
-    private async getBrowser() {
-        const browser = await puppeteer.launch({
-            args: ['--no-sandbox'],
-            headless: true,
-        })
-
-        return browser
-    }
+    constructor(
+        private logger: Logger,
+        private dir: string,
+        private browser: Browser
+    ) {}
 
     private getFiles(extension: string) {
-        if (!fs.existsSync(this.dir)) fs.mkdirSync(this.dir)
         const filename = `${Date.now()}-${Math.random()}.${extension}`
         const path = this.dir + '/' + filename
         return {
@@ -26,10 +19,9 @@ class Usecase {
     }
 
     public async Image({ url, property }: RequestImage) {
-        const browser = await this.getBrowser()
+        const page = await this.browser.newPage()
         try {
             const { filename, path } = this.getFiles(property.extension)
-            const page = await browser.newPage()
             await page.goto(url, { waitUntil: 'load' })
             if (property.height && property.width) {
                 await page.setViewport({
@@ -47,15 +39,14 @@ class Usecase {
         } catch (error) {
             throw error
         } finally {
-            await browser.close()
+            await page.close()
         }
     }
 
     public async Pdf({ url, property }: RequestPdf) {
-        const browser = await this.getBrowser()
+        const page = await this.browser.newPage()
         try {
             const { filename, path } = this.getFiles('pdf')
-            const page = await browser.newPage()
             await page.goto(url, { waitUntil: 'load' })
             const { format, margin } = property
             const documentPdf = await page.pdf({
@@ -72,7 +63,7 @@ class Usecase {
         } catch (error) {
             throw error
         } finally {
-            await browser.close()
+            await page.close()
         }
     }
 }

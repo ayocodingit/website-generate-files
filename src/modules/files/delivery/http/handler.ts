@@ -5,15 +5,13 @@ import { NextFunction, Request, Response } from 'express'
 import statusCode from '../../../../pkg/statusCode'
 import { ValidateFormRequest } from '../../../../helpers/validate'
 import { RequestImage, RequestPdf } from '../../entity/schema'
-import Jwt from '../../../../pkg/jwt'
 import removeFile from '../../../../cron/removeFile.cron'
 
 class Handler {
     constructor(
         private logger: Logger,
         private http: Http,
-        private usecase: Usecase,
-        private jwt: Jwt
+        private usecase: Usecase
     ) {}
 
     public Image() {

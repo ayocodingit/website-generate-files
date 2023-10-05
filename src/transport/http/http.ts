@@ -7,6 +7,8 @@ import compression from 'compression'
 import { Config } from '../../config/config.interface'
 import Error from '../../pkg/error'
 import Logger from '../../pkg/logger'
+import fs from 'fs'
+
 
 class Http {
     private app: Express
@@ -16,6 +18,10 @@ class Http {
         this.app = express()
         this.plugins()
         this.pageHome()
+    }
+
+    private createDir() {
+        if (!fs.existsSync(this.dir)) fs.mkdirSync(this.dir)
     }
 
     private plugins() {
@@ -28,7 +34,7 @@ class Http {
     }
 
     private pageNotFound = () => {
-        this.app.get('*', (req: Request, res: Response, next: NextFunction) => {
+        this.app.all('*', (req: Request, res: Response, next: NextFunction) => {
             throw new Error(
                 statusCode.NOT_FOUND,
                 statusCode[statusCode.NOT_FOUND]
@@ -108,6 +114,7 @@ class Http {
 
     public Run(port: number) {
         this.pageNotFound()
+        this.createDir()
         this.app.use(this.onError)
         if (this.config.app.env !== 'test') {
             this.app.listen(port, () => {
