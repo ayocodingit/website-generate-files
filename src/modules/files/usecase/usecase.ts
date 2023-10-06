@@ -18,11 +18,14 @@ class Usecase {
         }
     }
 
-    public async Image({ url, property }: RequestImage) {
+    public async Image({ url, property, wait_for_selector }: RequestImage) {
         const page = await this.browser.newPage()
         try {
             const { filename, path } = this.getFiles(property.extension)
-            await page.goto(url, { waitUntil: 'load' })
+            await page.goto(url, { waitUntil: 'networkidle2' })
+            if (wait_for_selector) {
+                await page.waitForSelector(wait_for_selector, { hidden: true })
+            }
             if (property.height && property.width) {
                 await page.setViewport({
                     height: property.height,
@@ -43,11 +46,14 @@ class Usecase {
         }
     }
 
-    public async Pdf({ url, property }: RequestPdf) {
+    public async Pdf({ url, property, wait_for_selector }: RequestPdf) {
         const page = await this.browser.newPage()
         try {
             const { filename, path } = this.getFiles('pdf')
-            await page.goto(url, { waitUntil: 'load' })
+            await page.goto(url, { waitUntil: 'networkidle2' })
+            if (wait_for_selector) {
+                await page.waitForSelector(wait_for_selector, { hidden: true })
+            }
             const { format, margin } = property
             const documentPdf = await page.pdf({
                 format,

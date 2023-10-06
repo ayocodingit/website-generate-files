@@ -5,6 +5,7 @@ export interface RequestImage {
         width: number
         extension: string
     }
+    wait_for_selector: string
     seconds: number
 }
 
@@ -19,5 +20,6 @@ export interface RequestPdf {
             right: string
         }
     }
+    wait_for_selector: string
     seconds: number
 }

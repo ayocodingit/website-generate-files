@@ -7,6 +7,7 @@ export const RequestImage = Joi.object({
         heigth: Joi.number().optional(),
         width: Joi.number().optional(),
     }).default(),
+    wait_for_selector: Joi.string().optional(),
     seconds: Joi.number().default(1).optional(),
 })
 
@@ -21,5 +22,6 @@ export const RequestPdf = Joi.object({
             right: Joi.string().default('76px'),
         }).default(),
     }).default(),
+    wait_for_selector: Joi.string().optional(),
     seconds: Joi.number().default(1).optional(),
 })

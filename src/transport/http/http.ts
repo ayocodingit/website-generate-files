@@ -9,7 +9,6 @@ import Error from '../../pkg/error'
 import Logger from '../../pkg/logger'
 import fs from 'fs'
 
-
 class Http {
     private app: Express
     public dir = 'public'
