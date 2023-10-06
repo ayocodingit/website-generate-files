@@ -3,7 +3,7 @@ import fs from 'fs'
 
 const removeFile = (path: string, second: number) => {
     schedule.scheduleJob({ second }, function () {
-        if (fs.existsSync(path)) fs.rmSync(path)
+        if (fs.existsSync(path)) fs.unlinkSync(path)
     })
 }
 
