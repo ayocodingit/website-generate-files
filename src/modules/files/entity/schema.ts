@@ -1,4 +1,5 @@
 import Joi from 'joi'
+import config from '../../../config/config'
 
 export const RequestImage = Joi.object({
     url: Joi.string().uri().required(),
@@ -24,4 +25,17 @@ export const RequestPdf = Joi.object({
     }).default(),
     wait_for_selector: Joi.string().optional(),
     seconds: Joi.number().default(1).optional(),
+})
+
+export const RequestUpload = Joi.object({
+    seconds: Joi.number().default(1).optional(),
+    file: Joi.object({
+        path: Joi.string().required(),
+        size: Joi.number().max(config.file.max).required(),
+        mimetype: Joi.string()
+            .valid(...config.file.type)
+            .required(),
+        originalname: Joi.string().required(),
+        filename: Joi.string().required(),
+    }),
 })

@@ -8,6 +8,7 @@ import { Config } from '../../config/config.interface'
 import Error from '../../pkg/error'
 import Logger from '../../pkg/logger'
 import fs from 'fs'
+import multer from 'multer'
 
 class Http {
     private app: Express
@@ -21,6 +22,11 @@ class Http {
 
     private createDir() {
         if (!fs.existsSync(this.dir)) fs.mkdirSync(this.dir)
+    }
+
+    public Upload(fieldName: string) {
+        const upload = multer({ dest: this.dir })
+        return upload.single(fieldName)
     }
 
     private plugins() {

@@ -23,3 +23,14 @@ export interface RequestPdf {
     wait_for_selector: string
     seconds: number
 }
+
+export interface RequestUpload {
+    seconds: number
+    file: {
+        path: string
+        size: number
+        mimetype: string
+        originalname: string
+        filename: string
+    }
+}

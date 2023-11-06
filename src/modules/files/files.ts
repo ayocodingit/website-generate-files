@@ -3,7 +3,6 @@ import Logger from '../../pkg/logger'
 import Usecase from './usecase/usecase'
 import Handler from './delivery/http/handler'
 import { Config } from '../../config/config.interface'
-import Jwt from '../../pkg/jwt'
 import { Browser } from 'puppeteer'
 
 class Files {
@@ -27,6 +26,7 @@ class Files {
 
         Router.post('/image', handler.Image())
         Router.post('/pdf', handler.Pdf())
+        Router.post('/upload', this.http.Upload('file'), handler.Upload())
 
         this.http.SetRouter('/v1/', Router)
     }
