@@ -73,20 +73,20 @@ class Handler {
                     seconds: req.body.seconds,
                     file: req.file || {},
                 })
-                
-                const result = await this.usecase.Upload(body)
-                this.logger.Info(statusCode[statusCode.CREATED], {
+
+                const { path, filename } = await this.usecase.Upload(body)
+                this.logger.Info(statusCode[statusCode.OK], {
                     additional_info: this.http.AdditionalInfo(
                         req,
-                        statusCode.CREATED
+                        statusCode.OK
                     ),
                 })
 
-                removeFile(result.path, body.seconds)
+                removeFile(path, body.seconds)
 
                 return res.status(statusCode.OK).json({
                     data: {
-                        url: this.http.GetDomain(req) + '/download/' + result.filename,
+                        url: this.http.GetDomain(req) + '/download/' + filename,
                     },
                 })
             } catch (error) {

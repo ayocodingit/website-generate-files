@@ -2,6 +2,8 @@ import { Browser } from 'puppeteer'
 import Logger from '../../../pkg/logger'
 import { RequestImage, RequestPdf, RequestUpload } from '../entity/interface'
 import fs from 'fs'
+import { extname } from 'path'
+
 class Usecase {
     constructor(
         private logger: Logger,
@@ -74,12 +76,10 @@ class Usecase {
     }
 
     public async Upload(body: RequestUpload) {
-        const { filename, path } = this.getFiles(body.file.originalname)
-        fs.renameSync(body.file.path, path)
-        return {
-            filename,
-            path
-        }
+        const ext = extname(body.file.originalname).replace('.', '')
+        const file = this.getFiles(ext)
+        fs.renameSync(body.file.path, file.path)
+        return file
     }
 }
 

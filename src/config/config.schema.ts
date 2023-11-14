@@ -9,8 +9,6 @@ export default Joi.object({
     APP_LOG: Joi.string().valid('info', 'error', 'warn').required(),
     FILE_TYPE: Joi.string()
         .optional()
-        .default(
-            'image/jpg,image/png,image/jpeg,image/svg+xml'
-        ),
+        .default('image/jpg,image/png,image/jpeg,image/svg+xml'),
     FILE_MAX: Joi.number().optional().default(10),
 })
