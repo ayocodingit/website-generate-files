@@ -6,19 +6,21 @@ import statusCode from '../../../../pkg/statusCode'
 import { ValidateFormRequest } from '../../../../helpers/validate'
 import { RequestImage, RequestPdf, RequestUpload } from '../../entity/schema'
 import removeFile from '../../../../cron/removeFile.cron'
+import Minio from '../../../../external/minio'
 
 class Handler {
     constructor(
         private logger: Logger,
         private http: Http,
-        private usecase: Usecase
+        private usecase: Usecase,
+        private minio: Minio
     ) {}
 
     public Image() {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
                 const body = ValidateFormRequest(RequestImage, req.body)
-                const { path, filename } = await this.usecase.Image(body)
+                const { filename } = await this.usecase.Image(body)
 
                 this.logger.Info(statusCode[statusCode.OK], {
                     additional_info: this.http.AdditionalInfo(
@@ -27,11 +29,12 @@ class Handler {
                     ),
                 })
 
-                removeFile(path, body.seconds)
+                removeFile(this.minio, filename, body.seconds)
+                const url = await this.minio.GetFileUrl(filename)
 
                 return res.status(statusCode.OK).json({
                     data: {
-                        url: this.http.GetDomain(req) + '/download/' + filename,
+                        url,
                     },
                 })
             } catch (error) {
@@ -44,7 +47,7 @@ class Handler {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
                 const body = ValidateFormRequest(RequestPdf, req.body)
-                const { path, filename } = await this.usecase.Pdf(body)
+                const { filename } = await this.usecase.Pdf(body)
 
                 this.logger.Info(statusCode[statusCode.OK], {
                     additional_info: this.http.AdditionalInfo(
@@ -53,11 +56,12 @@ class Handler {
                     ),
                 })
 
-                removeFile(path, body.seconds)
+                removeFile(this.minio, filename, body.seconds)
+                const url = await this.minio.GetFileUrl(filename)
 
                 return res.status(statusCode.OK).json({
                     data: {
-                        url: this.http.GetDomain(req) + '/download/' + filename,
+                        url: url,
                     },
                 })
             } catch (error) {
@@ -74,7 +78,7 @@ class Handler {
                     file: req.file || {},
                 })
 
-                const { path, filename } = await this.usecase.Upload(body)
+                const { filename } = await this.usecase.Upload(body)
                 this.logger.Info(statusCode[statusCode.OK], {
                     additional_info: this.http.AdditionalInfo(
                         req,
@@ -82,11 +86,12 @@ class Handler {
                     ),
                 })
 
-                removeFile(path, body.seconds)
+                removeFile(this.minio, filename, body.seconds)
+                const url = await this.minio.GetFileUrl(filename)
 
                 return res.status(statusCode.OK).json({
                     data: {
-                        url: this.http.GetDomain(req) + '/download/' + filename,
+                        url,
                     },
                 })
             } catch (error) {

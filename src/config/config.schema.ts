@@ -11,4 +11,10 @@ export default Joi.object({
         .optional()
         .default('image/jpg,image/png,image/jpeg,image/svg+xml'),
     FILE_MAX: Joi.number().optional().default(10),
+    MINIO_ACCESS_KEY: Joi.string().required(),
+    MINIO_SECRET_KEY: Joi.string().required(),
+    MINIO_ENDPOINT: Joi.string().required(),
+    MINIO_BUCKET: Joi.string().required(),
+    MINIO_REGION: Joi.string().required(),
+    MINIO_SSL: Joi.boolean().required(),
 })

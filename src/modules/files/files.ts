@@ -4,6 +4,7 @@ import Usecase from './usecase/usecase'
 import Handler from './delivery/http/handler'
 import { Config } from '../../config/config.interface'
 import { Browser } from 'puppeteer'
+import Minio from '../../external/minio'
 
 class Files {
     constructor(
@@ -16,8 +17,14 @@ class Files {
     }
 
     private async loadHttp() {
-        const usecase = new Usecase(this.logger, this.http.dir, this.browser)
-        const handler = new Handler(this.logger, this.http, usecase)
+        const minio = new Minio(this.config)
+        const usecase = new Usecase(
+            this.logger,
+            this.http.dir,
+            this.browser,
+            minio
+        )
+        const handler = new Handler(this.logger, this.http, usecase, minio)
         this.httpPublic(handler)
     }
 

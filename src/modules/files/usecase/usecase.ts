@@ -3,12 +3,15 @@ import Logger from '../../../pkg/logger'
 import { RequestImage, RequestPdf, RequestUpload } from '../entity/interface'
 import fs from 'fs'
 import { extname } from 'path'
+import Minio from '../../../external/minio'
+import mime from 'mime'
 
 class Usecase {
     constructor(
         private logger: Logger,
         private dir: string,
-        private browser: Browser
+        private browser: Browser,
+        private minio: Minio
     ) {}
 
     private getFiles(extension: string) {
@@ -37,6 +40,12 @@ class Usecase {
 
             await page.screenshot({ path })
 
+            const stats = fs.statSync(path)
+            const mime_type = mime.getType(path) as string
+            await this.minio.Upload(path, filename, stats.size, mime_type)
+
+            fs.rmSync(path)
+
             return {
                 filename,
                 path,
@@ -63,6 +72,11 @@ class Usecase {
             })
 
             fs.writeFileSync(path, documentPdf)
+            const stats = fs.statSync(path)
+            const mime_type = mime.getType(path) as string
+            await this.minio.Upload(path, filename, stats.size, mime_type)
+
+            fs.rmSync(path)
 
             return {
                 filename,
@@ -79,6 +93,15 @@ class Usecase {
         const ext = extname(body.file.originalname).replace('.', '')
         const file = this.getFiles(ext)
         fs.renameSync(body.file.path, file.path)
+
+        await this.minio.Upload(
+            file.path,
+            file.filename,
+            body.file.size,
+            body.file.mimetype
+        )
+        fs.rmSync(file.path)
+
         return file
     }
 }
