@@ -1,6 +1,8 @@
 import Joi from 'joi'
 import config from '../../../config/config'
 
+const seconds = 28800
+
 export const RequestImage = Joi.object({
     url: Joi.string().uri().required(),
     property: Joi.object({
@@ -9,7 +11,7 @@ export const RequestImage = Joi.object({
         width: Joi.number().optional(),
     }).default(),
     wait_for_selector: Joi.string().optional(),
-    seconds: Joi.number().default(1).optional(),
+    seconds: Joi.number().default(seconds).optional(),
 })
 
 export const RequestPdf = Joi.object({
@@ -24,11 +26,11 @@ export const RequestPdf = Joi.object({
         }).default(),
     }).default(),
     wait_for_selector: Joi.string().optional(),
-    seconds: Joi.number().default(1).optional(),
+    seconds: Joi.number().default(seconds).optional(),
 })
 
 export const RequestUpload = Joi.object({
-    seconds: Joi.number().default(1).optional(),
+    seconds: Joi.number().default(seconds).optional(),
     file: Joi.object({
         path: Joi.string().required(),
         size: Joi.number().max(config.file.max).required(),
