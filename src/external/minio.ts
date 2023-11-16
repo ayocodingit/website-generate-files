@@ -45,7 +45,11 @@ class Minio {
 
     public async GetFileUrl(filename: string) {
         try {
-            return this.client.presignedGetObject(this.bucket, filename)
+            const url = await this.client.presignedGetObject(
+                this.bucket,
+                filename
+            )
+            return Buffer.from(url).toString('base64')
         } catch (error) {
             throw error
         }

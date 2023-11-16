@@ -9,6 +9,7 @@ import Error from '../../pkg/error'
 import Logger from '../../pkg/logger'
 import fs from 'fs'
 import multer from 'multer'
+import axios from 'axios'
 
 class Http {
     private app: Express
@@ -35,7 +36,26 @@ class Http {
         this.app.use(bodyParser.json())
         this.app.use(helmet())
         this.app.use(compression())
-        this.app.use('/download', express.static(this.dir))
+        this.app.use(
+            '/download',
+            async (req: Request, res: Response, next: NextFunction) => {
+                try {
+                    let url = (req.query.url as string) || ''
+                    let mimetype =
+                        (req.query.mime_type as string) || 'image/png'
+                    url = Buffer.from(url, 'base64').toString('ascii')
+                    const { data } = await axios(url, {
+                        responseType: 'arraybuffer',
+                    })
+                    res.setHeader('Content-Type', mimetype)
+                    return res.send(data)
+                } catch (error) {
+                    return res.status(statusCode.NOT_FOUND).json({
+                        error: statusCode[statusCode.NOT_FOUND],
+                    })
+                }
+            }
+        )
     }
 
     private pageNotFound = () => {

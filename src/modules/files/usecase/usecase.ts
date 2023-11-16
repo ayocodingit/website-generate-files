@@ -49,6 +49,7 @@ class Usecase {
             return {
                 filename,
                 path,
+                mime_type,
             }
         } catch (error) {
             throw error
@@ -81,6 +82,7 @@ class Usecase {
             return {
                 filename,
                 path,
+                mime_type,
             }
         } catch (error) {
             throw error
