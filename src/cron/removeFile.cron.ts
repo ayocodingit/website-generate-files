@@ -3,6 +3,7 @@ import Minio from '../external/minio'
 
 const removeFile = (minio: Minio, filename: string, second: number) => {
     const time = second * 1000
+    if (time === 0) return
     const startTime = new Date(Date.now() + time)
     const endTime = new Date(startTime.getTime() + 1000)
     scheduleJob(

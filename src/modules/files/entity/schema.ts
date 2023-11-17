@@ -1,7 +1,7 @@
 import Joi from 'joi'
 import config from '../../../config/config'
 
-const seconds = 3600
+const seconds = 0
 
 export const RequestImage = Joi.object({
     url: Joi.string().uri().required(),
