@@ -7,7 +7,7 @@ export const RequestImage = Joi.object({
     url: Joi.string().uri().required(),
     property: Joi.object({
         extension: Joi.string().valid('png', 'jpg').default('jpg'),
-        heigth: Joi.number().optional(),
+        height: Joi.number().optional(),
         width: Joi.number().optional(),
     }).default(),
     wait_for_selector: Joi.string().optional(),
