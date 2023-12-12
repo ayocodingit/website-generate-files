@@ -24,6 +24,11 @@ export interface RequestPdf {
     seconds: number
 }
 
+export interface RequestConvertImage {
+    url: string
+    seconds: number
+}
+
 export interface RequestUpload {
     seconds: number
     file: {

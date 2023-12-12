@@ -59,6 +59,7 @@
         "node-schedule": "^2.1.1",
         "puppeteer": "^10.4.0",
         "redis": "^4.5.1",
+        "sharp": "^0.33.0",
         "winston": "^3.8.2"
     }
 }

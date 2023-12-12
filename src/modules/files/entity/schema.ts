@@ -29,6 +29,11 @@ export const RequestPdf = Joi.object({
     seconds: Joi.number().default(seconds).optional(),
 })
 
+export const RequestConvertImage = Joi.object({
+    url: Joi.string().uri().required(),
+    seconds: Joi.number().default(seconds).optional(),
+})
+
 export const RequestUpload = Joi.object({
     seconds: Joi.number().default(seconds).optional(),
     file: Joi.object({
