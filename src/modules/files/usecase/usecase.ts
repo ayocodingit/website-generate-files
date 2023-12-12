@@ -1,10 +1,19 @@
 import { Browser } from 'puppeteer'
 import Logger from '../../../pkg/logger'
-import { RequestImage, RequestPdf, RequestUpload } from '../entity/interface'
-import fs from 'fs'
+import {
+    RequestConvertImage,
+    RequestImage,
+    RequestPdf,
+    RequestUpload,
+} from '../entity/interface'
+import fs, { readFileSync, writeFileSync } from 'fs'
 import { extname } from 'path'
 import Minio from '../../../external/minio'
 import mime from 'mime'
+import axios from 'axios'
+import error from '../../../pkg/error'
+import statusCode from '../../../pkg/statusCode'
+import sharp from 'sharp'
 
 class Usecase {
     constructor(
@@ -42,7 +51,8 @@ class Usecase {
 
             const stats = fs.statSync(path)
             const mime_type = mime.getType(path) as string
-            await this.minio.Upload(path, filename, stats.size, mime_type)
+            const source = readFileSync(path)
+            await this.minio.Upload(source, filename, stats.size, mime_type)
 
             fs.rmSync(path)
 
@@ -75,7 +85,8 @@ class Usecase {
             fs.writeFileSync(path, documentPdf)
             const stats = fs.statSync(path)
             const mime_type = mime.getType(path) as string
-            await this.minio.Upload(path, filename, stats.size, mime_type)
+            const source = readFileSync(path)
+            await this.minio.Upload(source, filename, stats.size, mime_type)
 
             fs.rmSync(path)
 
@@ -91,13 +102,49 @@ class Usecase {
         }
     }
 
+    public async ConvertImage({ url }: RequestConvertImage) {
+        try {
+            const { data, status, headers } = await axios.get(url, {
+                responseType: 'arraybuffer',
+            })
+
+            let contentType = headers['content-type'] || ''
+
+            if (status === 200 && contentType === 'text/html; charset=utf-8')
+                throw new error(
+                    statusCode.NOT_FOUND,
+                    statusCode[statusCode.NOT_FOUND]
+                )
+
+            // convert image
+            const sharpImage = sharp(data)
+            const { data: buffer, info } = await sharpImage
+                .webp()
+                .toBuffer({ resolveWithObject: true })
+
+            const { filename, path } = this.getFiles(info.format)
+            const mime_type = 'image/' + info.format
+
+            await this.minio.Upload(buffer, filename, info.size, mime_type)
+
+            return {
+                filename,
+                path,
+                mime_type,
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+
     public async Upload(body: RequestUpload) {
         const ext = extname(body.file.originalname).replace('.', '')
         const file = this.getFiles(ext)
         fs.renameSync(body.file.path, file.path)
 
+        const source = readFileSync(file.path)
         await this.minio.Upload(
-            file.path,
+            source,
             file.filename,
             body.file.size,
             body.file.mimetype

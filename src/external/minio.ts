@@ -1,4 +1,3 @@
-import { readFileSync } from 'fs'
 import { Config } from '../config/config.interface'
 import { Client } from 'minio'
 class Minio {
@@ -15,7 +14,7 @@ class Minio {
     }
 
     public async Upload(
-        source: string,
+        source: Buffer,
         filename: string,
         size: number,
         ContentType: string
@@ -24,7 +23,7 @@ class Minio {
             this.client.putObject(
                 this.bucket,
                 filename,
-                readFileSync(source),
+                source,
                 size,
                 {
                     'Content-Type': ContentType,

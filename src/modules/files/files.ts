@@ -33,6 +33,7 @@ class Files {
 
         Router.post('/image', handler.Image())
         Router.post('/pdf', handler.Pdf())
+        Router.post('/convert-image', handler.ConvertImage())
         Router.post('/upload', this.http.Upload('file'), handler.Upload())
 
         this.http.SetRouter('/v1/', Router)

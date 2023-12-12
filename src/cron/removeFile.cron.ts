@@ -1,7 +1,13 @@
 import { scheduleJob } from 'node-schedule'
 import Minio from '../external/minio'
+import Logger from '../pkg/logger'
 
-const removeFile = (minio: Minio, filename: string, second: number) => {
+const removeFile = (
+    minio: Minio,
+    filename: string,
+    second: number,
+    logger: Logger
+) => {
     const time = second * 1000
     if (time === 0) return
     const startTime = new Date(Date.now() + time)
@@ -11,7 +17,11 @@ const removeFile = (minio: Minio, filename: string, second: number) => {
         function () {
             minio
                 .Delete(filename)
-                .then((res) => {})
+                .then((res) => {
+                    logger.Info(
+                        'success Deletes with the name file is ' + filename
+                    )
+                })
                 .catch((e) => {})
         }
     )
