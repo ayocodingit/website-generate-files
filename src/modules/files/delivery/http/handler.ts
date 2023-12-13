@@ -25,7 +25,7 @@ class Handler {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
                 const body = ValidateFormRequest(RequestImage, req.body)
-                const { filename, mime_type } = await this.usecase.Image(body)
+                const { filename } = await this.usecase.Image(body)
 
                 this.logger.Info(statusCode[statusCode.OK], {
                     additional_info: this.http.AdditionalInfo(
@@ -39,9 +39,7 @@ class Handler {
 
                 return res.status(statusCode.OK).json({
                     data: {
-                        url:
-                            this.http.GetDomain(req) +
-                            `/download?url=${url}&mimetype=${mime_type}`,
+                        url: this.http.GetDomain(req) + `/download?url=${url}`,
                     },
                 })
             } catch (error) {
@@ -54,7 +52,7 @@ class Handler {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
                 const body = ValidateFormRequest(RequestPdf, req.body)
-                const { filename, mime_type } = await this.usecase.Pdf(body)
+                const { filename } = await this.usecase.Pdf(body)
 
                 this.logger.Info(statusCode[statusCode.OK], {
                     additional_info: this.http.AdditionalInfo(
@@ -68,9 +66,7 @@ class Handler {
 
                 return res.status(statusCode.OK).json({
                     data: {
-                        url:
-                            this.http.GetDomain(req) +
-                            `/download?url=${url}&mimetype=${mime_type}`,
+                        url: this.http.GetDomain(req) + `/download?url=${url}`,
                     },
                 })
             } catch (error) {
@@ -83,9 +79,7 @@ class Handler {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
                 const body = ValidateFormRequest(RequestConvertImage, req.body)
-                const { filename, mime_type } = await this.usecase.ConvertImage(
-                    body
-                )
+                const { filename } = await this.usecase.ConvertImage(body)
 
                 this.logger.Info(statusCode[statusCode.OK], {
                     additional_info: this.http.AdditionalInfo(
@@ -99,9 +93,7 @@ class Handler {
 
                 return res.status(statusCode.OK).json({
                     data: {
-                        url:
-                            this.http.GetDomain(req) +
-                            `/download?url=${url}&mimetype=${mime_type}`,
+                        url: this.http.GetDomain(req) + `/download?url=${url}`,
                     },
                 })
             } catch (error) {
@@ -131,9 +123,7 @@ class Handler {
 
                 return res.status(statusCode.OK).json({
                     data: {
-                        url:
-                            this.http.GetDomain(req) +
-                            `/download?url=${url}&mimetype=${body.file.mimetype}`,
+                        url: this.http.GetDomain(req) + `/download?url=${url}`,
                     },
                 })
             } catch (error) {

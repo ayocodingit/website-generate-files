@@ -35,6 +35,7 @@ const config: Config = {
     file: {
         max: Number(env.FILE_MAX) * 1024 * 1024, // MB
         type: env.FILE_TYPE.split(','),
+        quality: Number(env.FILE_QUALITY),
     },
     minio: {
         access_key: env.MINIO_ACCESS_KEY,

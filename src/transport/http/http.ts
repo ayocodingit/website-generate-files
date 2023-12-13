@@ -10,6 +10,8 @@ import Logger from '../../pkg/logger'
 import fs from 'fs'
 import multer from 'multer'
 import axios from 'axios'
+import error from '../../pkg/error'
+import { RegexContentTypeImage } from '../../helpers/regex'
 
 class Http {
     private app: Express
@@ -41,13 +43,22 @@ class Http {
             async (req: Request, res: Response, next: NextFunction) => {
                 try {
                     let url = (req.query.url as string) || ''
-                    let mimetype =
-                        (req.query.mime_type as string) || 'image/png'
                     url = Buffer.from(url, 'base64').toString('ascii')
-                    const { data } = await axios(url, {
+                    const { data, status, headers } = await axios(url, {
                         responseType: 'arraybuffer',
                     })
-                    res.setHeader('Content-Type', mimetype)
+                    const contentType = headers['content-type'] || ''
+
+                    if (
+                        status === 200 &&
+                        !RegexContentTypeImage.test(contentType)
+                    )
+                        throw new error(
+                            statusCode.NOT_FOUND,
+                            statusCode[statusCode.NOT_FOUND]
+                        )
+
+                    res.setHeader('Content-Type', contentType)
                     return res.send(data)
                 } catch (error) {
                     return res.status(statusCode.NOT_FOUND).json({
