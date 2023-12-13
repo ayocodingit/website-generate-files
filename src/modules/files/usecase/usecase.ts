@@ -13,7 +13,8 @@ import mime from 'mime'
 import axios from 'axios'
 import error from '../../../pkg/error'
 import statusCode from '../../../pkg/statusCode'
-import sharp from 'sharp'
+import Sharp from '../../../pkg/sharp'
+import { RegexContentTypeImage } from '../../../helpers/regex'
 
 class Usecase {
     constructor(
@@ -59,7 +60,6 @@ class Usecase {
             return {
                 filename,
                 path,
-                mime_type,
             }
         } catch (error) {
             throw error
@@ -93,7 +93,6 @@ class Usecase {
             return {
                 filename,
                 path,
-                mime_type,
             }
         } catch (error) {
             throw error
@@ -108,29 +107,22 @@ class Usecase {
                 responseType: 'arraybuffer',
             })
 
-            let contentType = headers['content-type'] || ''
+            const contentType = headers['content-type'] || ''
 
-            if (status === 200 && contentType === 'text/html; charset=utf-8')
+            if (status === 200 && !RegexContentTypeImage.test(contentType))
                 throw new error(
-                    statusCode.NOT_FOUND,
-                    statusCode[statusCode.NOT_FOUND]
+                    statusCode.BAD_REQUEST,
+                    statusCode[statusCode.BAD_REQUEST]
                 )
 
-            // convert image
-            const sharpImage = sharp(data)
-            const { data: buffer, info } = await sharpImage
-                .webp()
-                .toBuffer({ resolveWithObject: true })
+            const { source, meta } = await Sharp.ConvertToWebp(data)
 
-            const { filename, path } = this.getFiles(info.format)
-            const mime_type = 'image/' + info.format
+            const { filename, size, mime_type } = meta
 
-            await this.minio.Upload(buffer, filename, info.size, mime_type)
+            await this.minio.Upload(source, filename, size, mime_type)
 
             return {
                 filename,
-                path,
-                mime_type,
             }
         } catch (error) {
             throw error

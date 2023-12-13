@@ -27,6 +27,7 @@ export interface Config {
     file: {
         max: number
         type: string[]
+        quality: number
     }
     minio: {
         access_key: string
