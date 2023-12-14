@@ -80,7 +80,7 @@ class Handler {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
                 const body = ValidateFormRequest(RequestConvertImage, req.body)
-                const { filename } = await this.usecase.ConvertImage(body)
+                const { filename, meta } = await this.usecase.ConvertImage(body)
 
                 this.logger.Info(statusCode[statusCode.OK], {
                     additional_info: this.http.AdditionalInfo(
@@ -95,6 +95,7 @@ class Handler {
                 return res.status(statusCode.OK).json({
                     data: {
                         url: this.http.GetDomain(req) + `/download?url=${url}`,
+                        ...meta,
                     },
                 })
             } catch (error) {
@@ -125,13 +126,13 @@ class Handler {
                 return res.status(statusCode.OK).json({
                     data: {
                         url: this.http.GetDomain(req) + `/download?url=${url}`,
-                        ...meta
+                        ...meta,
                     },
                 })
             } catch (error) {
                 return next(error)
             } finally {
-                rmSync(`${this.http.dir}/${req.file.filename}`)  
+                rmSync(`${this.http.dir}/${req.file.filename}`)
             }
         }
     }

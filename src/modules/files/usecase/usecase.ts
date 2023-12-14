@@ -123,6 +123,7 @@ class Usecase {
 
             return {
                 filename,
+                meta,
             }
         } catch (error) {
             throw error
