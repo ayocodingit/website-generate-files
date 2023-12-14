@@ -51,9 +51,9 @@ class Usecase {
             await page.screenshot({ path })
 
             const stats = fs.statSync(path)
-            const mime_type = mime.getType(path) as string
+            const mimetype = mime.getType(path) as string
             const source = readFileSync(path)
-            await this.minio.Upload(source, filename, stats.size, mime_type)
+            await this.minio.Upload(source, filename, stats.size, mimetype)
 
             fs.rmSync(path)
 
@@ -84,9 +84,9 @@ class Usecase {
 
             fs.writeFileSync(path, documentPdf)
             const stats = fs.statSync(path)
-            const mime_type = mime.getType(path) as string
+            const mimetype = mime.getType(path) as string
             const source = readFileSync(path)
-            await this.minio.Upload(source, filename, stats.size, mime_type)
+            await this.minio.Upload(source, filename, stats.size, mimetype)
 
             fs.rmSync(path)
 
@@ -117,9 +117,9 @@ class Usecase {
 
             const { source, meta } = await Sharp.ConvertToWebp(data)
 
-            const { filename, size, mime_type } = meta
+            const { filename, size, mimetype } = meta
 
-            await this.minio.Upload(source, filename, size, mime_type)
+            await this.minio.Upload(source, filename, size, mimetype)
 
             return {
                 filename,
@@ -130,20 +130,14 @@ class Usecase {
     }
 
     public async Upload(body: RequestUpload) {
-        const ext = extname(body.file.originalname).replace('.', '')
-        const file = this.getFiles(ext)
-        fs.renameSync(body.file.path, file.path)
-
-        const source = readFileSync(file.path)
-        await this.minio.Upload(
-            source,
-            file.filename,
-            body.file.size,
-            body.file.mimetype
+        const { source, meta } = await Sharp.ConvertToWebp(
+            readFileSync(body.file.path)
         )
-        fs.rmSync(file.path)
 
-        return file
+        const { filename, size, mimetype } = meta
+        await this.minio.Upload(source, filename, size, mimetype)
+
+        return { filename, meta }
     }
 }
 

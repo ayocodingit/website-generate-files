@@ -19,12 +19,12 @@ class Sharp {
             .toBuffer({ resolveWithObject: true })
 
         const { filename } = this.getFilename(info.format)
-        const mime_type = 'image/' + info.format
+        const mimetype = 'image/' + info.format
 
         return {
             meta: {
                 size: info.size,
-                mime_type,
+                mimetype,
                 filename,
             },
             source: data,

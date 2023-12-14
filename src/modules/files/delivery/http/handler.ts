@@ -12,6 +12,7 @@ import {
 } from '../../entity/schema'
 import removeFile from '../../../../cron/removeFile.cron'
 import Minio from '../../../../external/minio'
+import { rmSync } from 'fs'
 
 class Handler {
     constructor(
@@ -110,7 +111,7 @@ class Handler {
                     file: req.file || {},
                 })
 
-                const { filename } = await this.usecase.Upload(body)
+                const { filename, meta } = await this.usecase.Upload(body)
                 this.logger.Info(statusCode[statusCode.OK], {
                     additional_info: this.http.AdditionalInfo(
                         req,
@@ -124,10 +125,13 @@ class Handler {
                 return res.status(statusCode.OK).json({
                     data: {
                         url: this.http.GetDomain(req) + `/download?url=${url}`,
+                        ...meta
                     },
                 })
             } catch (error) {
                 return next(error)
+            } finally {
+                rmSync(`${this.http.dir}/${req.file.filename}`)  
             }
         }
     }
