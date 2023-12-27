@@ -6,10 +6,9 @@ import {
     RequestPdf,
     RequestUpload,
 } from '../entity/interface'
-import fs, { readFileSync, writeFileSync } from 'fs'
-import { extname } from 'path'
+import fs, { readFileSync } from 'fs'
 import Minio from '../../../external/minio'
-import mime from 'mime'
+import mime from 'mime-types'
 import axios from 'axios'
 import error from '../../../pkg/error'
 import statusCode from '../../../pkg/statusCode'
@@ -51,7 +50,7 @@ class Usecase {
             await page.screenshot({ path })
 
             const stats = fs.statSync(path)
-            const mimetype = mime.getType(path) as string
+            const mimetype = mime.lookup(filename) as string
             const source = readFileSync(path)
             await this.minio.Upload(source, filename, stats.size, mimetype)
 
@@ -84,7 +83,7 @@ class Usecase {
 
             fs.writeFileSync(path, documentPdf)
             const stats = fs.statSync(path)
-            const mimetype = mime.getType(path) as string
+            const mimetype = mime.lookup(filename) as string
             const source = readFileSync(path)
             await this.minio.Upload(source, filename, stats.size, mimetype)
 

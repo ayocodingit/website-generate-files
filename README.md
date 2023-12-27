@@ -3,7 +3,7 @@ Website Generate Files is a tool that makes it easy to take screenshots, generat
 
 ## Tech Stack
 
--   nodejs
+-   nodejs v18.17
 -   typescript
 -   http (express default)
 
@@ -37,3 +37,4 @@ $ npm run start:dev
 1. Generate Pdf
 2. Screenshot
 3. Download
+4. Compress Image
