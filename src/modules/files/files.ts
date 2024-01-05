@@ -26,7 +26,13 @@ class Files {
             minio
         )
         const shortlink = new Shortlink(this.config)
-        const handler = new Handler(this.logger, this.http, usecase, minio, shortlink)
+        const handler = new Handler(
+            this.logger,
+            this.http,
+            usecase,
+            minio,
+            shortlink
+        )
         this.httpPublic(handler)
     }
 

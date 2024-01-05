@@ -46,8 +46,8 @@ const config: Config = {
         ssl: env.MINIO_SSL,
     },
     shortlink: {
-        url: env.SHORTLINK_URL
-    }
+        url: env.SHORTLINK_URL,
+    },
 }
 
 export default config

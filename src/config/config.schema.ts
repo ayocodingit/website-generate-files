@@ -18,5 +18,5 @@ export default Joi.object({
     MINIO_BUCKET: Joi.string().required(),
     MINIO_REGION: Joi.string().required(),
     MINIO_SSL: Joi.boolean().required(),
-    SHORTLINK_URL: Joi.string().uri().optional() 
+    SHORTLINK_URL: Joi.string().uri().optional(),
 })

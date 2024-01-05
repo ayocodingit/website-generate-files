@@ -39,7 +39,9 @@ class Handler {
 
                 removeFile(this.minio, filename, body.seconds, this.logger)
                 const url = await this.minio.GetFileUrl(filename)
-                const shortlink = await this.shortlink.GenerateLink(this.http.GetDomain(req) + `/download?url=${url}`)
+                const shortlink = await this.shortlink.GenerateLink(
+                    this.http.GetDomain(req) + `/download?url=${url}`
+                )
                 return res.status(statusCode.OK).json({
                     data: {
                         url: shortlink,
@@ -66,7 +68,9 @@ class Handler {
 
                 removeFile(this.minio, filename, body.seconds, this.logger)
                 const url = await this.minio.GetFileUrl(filename)
-                const shortlink = await this.shortlink.GenerateLink(this.http.GetDomain(req) + `/download?url=${url}`)
+                const shortlink = await this.shortlink.GenerateLink(
+                    this.http.GetDomain(req) + `/download?url=${url}`
+                )
 
                 return res.status(statusCode.OK).json({
                     data: {
@@ -94,7 +98,9 @@ class Handler {
 
                 removeFile(this.minio, filename, body.seconds, this.logger)
                 const url = await this.minio.GetFileUrl(filename)
-                const shortlink = await this.shortlink.GenerateLink(this.http.GetDomain(req) + `/download?url=${url}`)
+                const shortlink = await this.shortlink.GenerateLink(
+                    this.http.GetDomain(req) + `/download?url=${url}`
+                )
                 return res.status(statusCode.OK).json({
                     data: {
                         url: shortlink,
@@ -125,7 +131,9 @@ class Handler {
 
                 removeFile(this.minio, filename, body.seconds, this.logger)
                 const url = await this.minio.GetFileUrl(filename)
-                const shortlink = await this.shortlink.GenerateLink(this.http.GetDomain(req) + `/download?url=${url}`)
+                const shortlink = await this.shortlink.GenerateLink(
+                    this.http.GetDomain(req) + `/download?url=${url}`
+                )
                 return res.status(statusCode.OK).json({
                     data: {
                         url: shortlink,
