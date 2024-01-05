@@ -11,7 +11,7 @@ class Shortlink {
             const { data } = await axios.post(this.config.shortlink.url, {
                 url
             })
-            return data.short_link   
+            return data.data.short_link   
         } catch (error) {
             return url
         }
