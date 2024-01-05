@@ -5,6 +5,7 @@ import Handler from './delivery/http/handler'
 import { Config } from '../../config/config.interface'
 import { Browser } from 'puppeteer'
 import Minio from '../../external/minio'
+import Shortlink from '../../external/shortlink'
 
 class Files {
     constructor(
@@ -24,7 +25,8 @@ class Files {
             this.browser,
             minio
         )
-        const handler = new Handler(this.logger, this.http, usecase, minio)
+        const shortlink = new Shortlink(this.config)
+        const handler = new Handler(this.logger, this.http, usecase, minio, shortlink)
         this.httpPublic(handler)
     }
 

@@ -13,13 +13,15 @@ import {
 import removeFile from '../../../../cron/removeFile.cron'
 import Minio from '../../../../external/minio'
 import { rmSync } from 'fs'
+import Shortlink from '../../../../external/shortlink'
 
 class Handler {
     constructor(
         private logger: Logger,
         private http: Http,
         private usecase: Usecase,
-        private minio: Minio
+        private minio: Minio,
+        private shortlink: Shortlink
     ) {}
 
     public Image() {
@@ -37,10 +39,10 @@ class Handler {
 
                 removeFile(this.minio, filename, body.seconds, this.logger)
                 const url = await this.minio.GetFileUrl(filename)
-
+                const shortlink = await this.shortlink.GenerateLink(this.http.GetDomain(req) + `/download?url=${url}`)
                 return res.status(statusCode.OK).json({
                     data: {
-                        url: this.http.GetDomain(req) + `/download?url=${url}`,
+                        url: shortlink,
                     },
                 })
             } catch (error) {
@@ -64,10 +66,11 @@ class Handler {
 
                 removeFile(this.minio, filename, body.seconds, this.logger)
                 const url = await this.minio.GetFileUrl(filename)
+                const shortlink = await this.shortlink.GenerateLink(this.http.GetDomain(req) + `/download?url=${url}`)
 
                 return res.status(statusCode.OK).json({
                     data: {
-                        url: this.http.GetDomain(req) + `/download?url=${url}`,
+                        url: shortlink,
                     },
                 })
             } catch (error) {
@@ -91,10 +94,10 @@ class Handler {
 
                 removeFile(this.minio, filename, body.seconds, this.logger)
                 const url = await this.minio.GetFileUrl(filename)
-
+                const shortlink = await this.shortlink.GenerateLink(this.http.GetDomain(req) + `/download?url=${url}`)
                 return res.status(statusCode.OK).json({
                     data: {
-                        url: this.http.GetDomain(req) + `/download?url=${url}`,
+                        url: shortlink,
                         ...meta,
                     },
                 })
@@ -122,10 +125,11 @@ class Handler {
 
                 removeFile(this.minio, filename, body.seconds, this.logger)
                 const url = await this.minio.GetFileUrl(filename)
+                const shortlink = await this.shortlink.GenerateLink(this.http.GetDomain(req) + `/download?url=${url}`)
 
                 return res.status(statusCode.OK).json({
                     data: {
-                        url: this.http.GetDomain(req) + `/download?url=${url}`,
+                        url: shortlink,
                         ...meta,
                     },
                 })

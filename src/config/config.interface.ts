@@ -37,4 +37,7 @@ export interface Config {
         region: string
         ssl: boolean
     }
+    shortlink: {
+        url: string
+    }
 }
