@@ -4,15 +4,13 @@ import { Config } from '../config/config.interface'
 class Shortlink {
     constructor(private config: Config) {}
 
-    public async GenerateLink(url: string) {
+    public async GenerateLink(url: string, seconds: number) {
         try {
-            const today = new Date()
-            const nextWeek = new Date(today)
-            nextWeek.setDate(today.getDate() + 7)
+            const expired = new Date(Date.now() + seconds * 1000)
 
             const { data } = await axios.post(this.config.shortlink.url, {
                 url,
-                expired: nextWeek,
+                expired,
             })
             return data.data.short_link
         } catch (error) {

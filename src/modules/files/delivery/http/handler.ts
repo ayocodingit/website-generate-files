@@ -40,7 +40,8 @@ class Handler {
                 removeFile(this.minio, filename, body.seconds, this.logger)
                 const url = await this.minio.GetFileUrl(filename)
                 const shortlink = await this.shortlink.GenerateLink(
-                    this.http.GetDomain(req) + `/download?url=${url}`
+                    this.http.GetDomain(req) + `/download?url=${url}`,
+                    body.seconds
                 )
                 return res.status(statusCode.OK).json({
                     data: {
@@ -69,7 +70,8 @@ class Handler {
                 removeFile(this.minio, filename, body.seconds, this.logger)
                 const url = await this.minio.GetFileUrl(filename)
                 const shortlink = await this.shortlink.GenerateLink(
-                    this.http.GetDomain(req) + `/download?url=${url}`
+                    this.http.GetDomain(req) + `/download?url=${url}`,
+                    body.seconds
                 )
 
                 return res.status(statusCode.OK).json({
@@ -99,7 +101,8 @@ class Handler {
                 removeFile(this.minio, filename, body.seconds, this.logger)
                 const url = await this.minio.GetFileUrl(filename)
                 const shortlink = await this.shortlink.GenerateLink(
-                    this.http.GetDomain(req) + `/download?url=${url}`
+                    this.http.GetDomain(req) + `/download?url=${url}`,
+                    body.seconds
                 )
                 return res.status(statusCode.OK).json({
                     data: {
@@ -132,7 +135,8 @@ class Handler {
                 removeFile(this.minio, filename, body.seconds, this.logger)
                 const url = await this.minio.GetFileUrl(filename)
                 const shortlink = await this.shortlink.GenerateLink(
-                    this.http.GetDomain(req) + `/download?url=${url}`
+                    this.http.GetDomain(req) + `/download?url=${url}`,
+                    body.seconds
                 )
                 return res.status(statusCode.OK).json({
                     data: {
