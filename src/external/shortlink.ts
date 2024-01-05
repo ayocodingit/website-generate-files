@@ -9,7 +9,8 @@ class Shortlink {
     public async GenerateLink(url: string) {
         try {
             const { data } = await axios.post(this.config.shortlink.url, {
-                url
+                url,
+                expired: new Date(Date.now() + (3600 * 1000 * 24))
             })
             return data.data.short_link   
         } catch (error) {
