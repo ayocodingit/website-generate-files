@@ -6,9 +6,13 @@ class Shortlink {
 
     public async GenerateLink(url: string) {
         try {
+            const today = new Date()
+            const nextWeek = new Date(today)
+            nextWeek.setDate(today.getDate() + 7)
+
             const { data } = await axios.post(this.config.shortlink.url, {
                 url,
-                expired: new Date(Date.now() + 3600 * 1000 * 24),
+                expired: nextWeek,
             })
             return data.data.short_link
         } catch (error) {
