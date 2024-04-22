@@ -11,7 +11,7 @@ import fs from 'fs'
 import multer from 'multer'
 import axios from 'axios'
 import error from '../../pkg/error'
-import { RegexContentTypeImage } from '../../helpers/regex'
+import { RegexContentTypeAllow, RegexContentTypeDoc } from '../../helpers/regex'
 
 class Http {
     private app: Express
@@ -51,7 +51,7 @@ class Http {
 
                     if (
                         status === 200 &&
-                        !RegexContentTypeImage.test(contentType)
+                        !RegexContentTypeAllow.test(contentType)
                     )
                         throw new error(
                             statusCode.NOT_FOUND,
@@ -59,6 +59,17 @@ class Http {
                         )
 
                     res.setHeader('Content-Type', contentType)
+
+                    if (RegexContentTypeDoc.test(contentType)) {
+                        url = url.split('?')[0]
+                        const urls = url.split('/')
+                        const filename = urls[urls.length - 1]
+                        res.setHeader(
+                            'Content-disposition',
+                            `attachment; filename=${filename}`
+                        )
+                    }
+
                     return res.send(data)
                 } catch (error) {
                     return res.status(statusCode.NOT_FOUND).json({

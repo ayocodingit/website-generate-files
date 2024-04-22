@@ -29,6 +29,12 @@ export interface RequestConvertImage {
     seconds: number
 }
 
+export interface RequestReplaceDoc {
+    url: string
+    seconds: number
+    data: object
+}
+
 export interface RequestUpload {
     seconds: number
     file: {

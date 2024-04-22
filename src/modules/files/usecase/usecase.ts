@@ -4,6 +4,7 @@ import {
     RequestConvertImage,
     RequestImage,
     RequestPdf,
+    RequestReplaceDoc,
     RequestUpload,
 } from '../entity/interface'
 import fs, { readFileSync } from 'fs'
@@ -13,7 +14,11 @@ import axios from 'axios'
 import error from '../../../pkg/error'
 import statusCode from '../../../pkg/statusCode'
 import Sharp from '../../../pkg/sharp'
-import { RegexContentTypeImage } from '../../../helpers/regex'
+import {
+    RegexContentTypeDoc,
+    RegexContentTypeImage,
+} from '../../../helpers/regex'
+import Docxtemplater from '../../../pkg/docxtemplater'
 
 class Usecase {
     constructor(
@@ -125,6 +130,46 @@ class Usecase {
                 meta,
             }
         } catch (error) {
+            throw error
+        }
+    }
+
+    public async ReplaceDoc({ url, data: payload }: RequestReplaceDoc) {
+        try {
+            const { data, status, headers } = await axios.get(url, {
+                responseType: 'arraybuffer',
+            })
+
+            const contentType = headers['content-type'] || ''
+
+            if (status === 200 && !RegexContentTypeDoc.test(contentType))
+                throw new error(
+                    statusCode.BAD_REQUEST,
+                    statusCode[statusCode.BAD_REQUEST]
+                )
+
+            const content = data.toString('binary')
+
+            const { filename } = this.getFiles('docx')
+
+            const source = Docxtemplater.ReplaceDoc(content, payload)
+
+            const size = Buffer.byteLength(source)
+
+            const mimetype =
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+
+            await this.minio.Upload(source, filename, size, mimetype)
+
+            return {
+                filename,
+                meta: {
+                    filename,
+                    size,
+                    mimetype,
+                },
+            }
+        } catch (error: any) {
             throw error
         }
     }
