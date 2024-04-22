@@ -1,10 +1,11 @@
 import Joi from 'joi'
 import config from '../../../config/config'
+import { uriWithSpaces } from '../../../helpers/joi'
 
 const seconds = 3600
 
 export const RequestImage = Joi.object({
-    url: Joi.string().uri().required(),
+    url: Joi.string().custom(uriWithSpaces).required(),
     property: Joi.object({
         extension: Joi.string().valid('png', 'jpg').default('jpg'),
         height: Joi.number().optional(),
@@ -15,7 +16,7 @@ export const RequestImage = Joi.object({
 })
 
 export const RequestPdf = Joi.object({
-    url: Joi.string().uri().required(),
+    url: Joi.string().custom(uriWithSpaces).required(),
     property: Joi.object({
         format: Joi.string().valid('a4', 'letter').default('a4'),
         margin: Joi.object({
@@ -30,8 +31,14 @@ export const RequestPdf = Joi.object({
 })
 
 export const RequestConvertImage = Joi.object({
-    url: Joi.string().uri().required(),
+    url: Joi.string().custom(uriWithSpaces).required(),
     seconds: Joi.number().default(seconds).optional(),
+})
+
+export const RequestReplaceDoc = Joi.object({
+    url: Joi.string().custom(uriWithSpaces).required(),
+    seconds: Joi.number().default(seconds).optional(),
+    data: Joi.object().optional(),
 })
 
 export const RequestUpload = Joi.object({
