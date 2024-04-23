@@ -19,7 +19,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@master
         with:
-          node-version: "18.17.0"
+          node-version: "20"
 
       - name: Run Npm Install
         run: npm install
