@@ -136,6 +136,8 @@ class Handler {
             try {
                 const body = ValidateFormRequest(RequestUpload, {
                     seconds: req.body.seconds,
+                    convertTo: req.body.convertTo,
+                    quality: req.body.quality,
                     file: req.file || {},
                 })
 

@@ -1,5 +1,4 @@
 import sharp from 'sharp'
-import config from '../config/config'
 
 class Sharp {
     constructor() {}
@@ -12,10 +11,9 @@ class Sharp {
         }
     }
 
-    public static async ConvertToWebp(source: Buffer) {
+    public static async Convert(source: Buffer, convertTo: 'webp' | 'jpeg', quality: number) {
         const sharpImage = sharp(source)
-        const { data, info } = await sharpImage
-            .webp({ quality: config.file.quality })
+        const { data, info } = await sharpImage[convertTo]({ quality })
             .toBuffer({ resolveWithObject: true })
 
         const { filename } = this.getFilename(info.format)
