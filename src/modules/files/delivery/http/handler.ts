@@ -81,24 +81,36 @@ class Handler {
     public ConvertImage() {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
+                const responseType = req.headers['response-type'] as
+                    | string
+                    | undefined
+
                 const body = ValidateFormRequest(RequestConvertImage, req.body)
-                const { filename, meta } = await this.usecase.ConvertImage(body)
+                const { meta, source } = await this.usecase.ConvertImage(body)
+                const { filename, size, mimetype } = meta
 
                 this.logger.Info(statusCode[statusCode.OK], {
                     additional_info: this.http.AdditionalInfo(
                         req,
                         statusCode.OK
                     ),
+                    responseType: responseType,
                 })
-
-                removeFile(this.minio, filename, body.seconds, this.logger)
-                const url = await this.minio.GetFileUrl(filename)
-                return res.status(statusCode.OK).json({
-                    data: {
-                        url: this.http.GetDomain(req) + `/download?url=${url}`,
-                        ...meta,
-                    },
-                })
+                if (responseType !== 'arraybuffer') {
+                    await this.minio.Upload(source, filename, size, mimetype)
+                    removeFile(this.minio, filename, body.seconds, this.logger)
+                    const url = await this.minio.GetFileUrl(filename)
+                    return res.status(statusCode.OK).json({
+                        data: {
+                            url:
+                                this.http.GetDomain(req) +
+                                `/download?url=${url}`,
+                            ...meta,
+                        },
+                    })
+                }
+                res.setHeader('Content-Type', meta.mimetype)
+                return res.status(statusCode.OK).send(source)
             } catch (error) {
                 return next(error)
             }

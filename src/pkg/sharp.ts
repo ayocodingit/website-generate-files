@@ -11,10 +11,15 @@ class Sharp {
         }
     }
 
-    public static async Convert(source: Buffer, convertTo: 'webp' | 'jpeg', quality: number) {
+    public static async Convert(
+        source: Buffer,
+        convertTo: 'webp' | 'jpeg',
+        quality: number
+    ) {
         const sharpImage = sharp(source)
-        const { data, info } = await sharpImage[convertTo]({ quality })
-            .toBuffer({ resolveWithObject: true })
+        const { data, info } = await sharpImage[convertTo]({
+            quality,
+        }).toBuffer({ resolveWithObject: true })
 
         const { filename } = this.getFilename(info.format)
         const mimetype = 'image/' + info.format

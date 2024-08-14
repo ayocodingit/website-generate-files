@@ -129,13 +129,9 @@ class Usecase {
                 quality
             )
 
-            const { filename, size, mimetype } = meta
-
-            await this.minio.Upload(source, filename, size, mimetype)
-
             return {
-                filename,
                 meta,
+                source,
             }
         } catch (error) {
             throw error
