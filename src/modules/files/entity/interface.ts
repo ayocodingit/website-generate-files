@@ -27,6 +27,8 @@ export interface RequestPdf {
 export interface RequestConvertImage {
     url: string
     seconds: number
+    quality: number
+    convertTo: 'webp' | 'jpeg'
 }
 
 export interface RequestReplaceDoc {
@@ -44,4 +46,6 @@ export interface RequestUpload {
         originalname: string
         filename: string
     }
+    quality: number
+    convertTo: 'webp' | 'jpeg'
 }

@@ -105,7 +105,11 @@ class Usecase {
         }
     }
 
-    public async ConvertImage({ url }: RequestConvertImage) {
+    public async ConvertImage({
+        url,
+        quality,
+        convertTo,
+    }: RequestConvertImage) {
         try {
             const { data, status, headers } = await axios.get(url, {
                 responseType: 'arraybuffer',
@@ -119,7 +123,11 @@ class Usecase {
                     statusCode[statusCode.BAD_REQUEST]
                 )
 
-            const { source, meta } = await Sharp.ConvertToWebp(data)
+            const { source, meta } = await Sharp.Convert(
+                data,
+                convertTo,
+                quality
+            )
 
             const { filename, size, mimetype } = meta
 
@@ -175,8 +183,10 @@ class Usecase {
     }
 
     public async Upload(body: RequestUpload) {
-        const { source, meta } = await Sharp.ConvertToWebp(
-            readFileSync(body.file.path)
+        const { source, meta } = await Sharp.Convert(
+            readFileSync(body.file.path),
+            body.convertTo,
+            body.quality
         )
 
         const { filename, size, mimetype } = meta

@@ -33,6 +33,8 @@ export const RequestPdf = Joi.object({
 export const RequestConvertImage = Joi.object({
     url: Joi.string().custom(uriWithSpaces).required(),
     seconds: Joi.number().default(seconds).optional(),
+    quality: Joi.number().min(1).max(100).optional().default(80),
+    convertTo: Joi.string().valid('jpeg', 'webp').optional().default('webp'),
 })
 
 export const RequestReplaceDoc = Joi.object({
@@ -52,4 +54,6 @@ export const RequestUpload = Joi.object({
         originalname: Joi.string().required(),
         filename: Joi.string().required(),
     }),
+    quality: Joi.number().min(1).max(100).optional().default(80),
+    convertTo: Joi.string().valid('jpeg', 'webp').optional().default('webp'),
 })
