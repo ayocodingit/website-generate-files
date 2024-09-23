@@ -35,6 +35,17 @@ export const RequestConvertImage = Joi.object({
     seconds: Joi.number().default(seconds).optional(),
     quality: Joi.number().min(1).max(100).optional().default(80),
     convertTo: Joi.string().valid('jpeg', 'webp').optional().default('webp'),
+    resize: Joi.boolean().optional().default(false),
+    width: Joi.number().when('resize', {
+        is: true,
+        then: Joi.required(),
+        otherwise: Joi.optional(),
+    }),
+    height: Joi.number().when('resize', {
+        is: true,
+        then: Joi.required(),
+        otherwise: Joi.optional(),
+    }),
 })
 
 export const RequestReplaceDoc = Joi.object({

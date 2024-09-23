@@ -1,5 +1,11 @@
 import sharp from 'sharp'
 
+export type Resize = {
+    resize: boolean
+    height: number
+    width: number
+}
+
 class Sharp {
     constructor() {}
 
@@ -14,9 +20,16 @@ class Sharp {
     public static async Convert(
         source: Buffer,
         convertTo: 'webp' | 'jpeg',
-        quality: number
+        quality: number,
+        resize?: Resize
     ) {
-        const sharpImage = sharp(source)
+        let sharpImage = sharp(source)
+        if (resize?.resize)
+            sharpImage = sharpImage.resize({
+                height: resize.height,
+                width: resize.width,
+                fit: 'inside',
+            })
         const { data, info } = await sharpImage[convertTo]({
             quality,
         }).toBuffer({ resolveWithObject: true })
