@@ -13,7 +13,7 @@ import mime from 'mime-types'
 import axios from 'axios'
 import error from '../../../pkg/error'
 import statusCode from '../../../pkg/statusCode'
-import Sharp from '../../../pkg/sharp'
+import Sharp, { Resize } from '../../../pkg/sharp'
 import {
     RegexContentTypeDoc,
     RegexContentTypeImage,
@@ -109,6 +109,9 @@ class Usecase {
         url,
         quality,
         convertTo,
+        resize,
+        height,
+        width,
     }: RequestConvertImage) {
         try {
             const { data, status, headers } = await axios.get(url, {
@@ -122,11 +125,13 @@ class Usecase {
                     statusCode.BAD_REQUEST,
                     statusCode[statusCode.BAD_REQUEST]
                 )
+            const optionResize: Resize = { resize, height, width }
 
             const { source, meta } = await Sharp.Convert(
                 data,
                 convertTo,
-                quality
+                quality,
+                optionResize
             )
 
             return {

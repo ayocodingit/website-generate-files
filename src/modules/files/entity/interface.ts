@@ -1,3 +1,5 @@
+import { Resize } from '../../../pkg/sharp'
+
 export interface RequestImage {
     url: string
     property: {
@@ -24,12 +26,12 @@ export interface RequestPdf {
     seconds: number
 }
 
-export interface RequestConvertImage {
+export type RequestConvertImage = {
     url: string
     seconds: number
     quality: number
     convertTo: 'webp' | 'jpeg'
-}
+} & Resize
 
 export interface RequestReplaceDoc {
     url: string
