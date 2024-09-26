@@ -38,10 +38,10 @@ class Sharp {
         const mimetype = 'image/' + info.format
 
         return {
+            filename,
             meta: {
                 size: info.size,
                 mimetype,
-                filename,
             },
             source: data,
         }

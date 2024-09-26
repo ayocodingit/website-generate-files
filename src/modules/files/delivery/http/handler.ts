@@ -28,8 +28,14 @@ class Handler {
     public Image() {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
+                const responseType = req.headers['response-type'] as
+                    | string
+                    | undefined
+
                 const body = ValidateFormRequest(RequestImage, req.body)
-                const { filename } = await this.usecase.Image(body)
+                const { filename, source, meta } = await this.usecase.Image(
+                    body
+                )
 
                 this.logger.Info(statusCode[statusCode.OK], {
                     additional_info: this.http.AdditionalInfo(
@@ -38,13 +44,29 @@ class Handler {
                     ),
                 })
 
-                removeFile(this.minio, filename, body.seconds, this.logger)
-                const url = await this.minio.GetFileUrl(filename)
-                return res.status(statusCode.OK).json({
-                    data: {
-                        url: this.http.GetDomain(req) + `/download?url=${url}`,
-                    },
-                })
+                if (responseType !== 'arraybuffer') {
+                    await this.minio.Upload(
+                        source,
+                        filename,
+                        meta.size,
+                        meta.mimetype
+                    )
+                    removeFile(this.minio, filename, body.seconds, this.logger)
+                    const url = await this.minio.GetFileUrl(filename)
+                    return res.status(statusCode.OK).json({
+                        data: {
+                            url:
+                                this.http.GetDomain(req) +
+                                `/download?url=${url}`,
+                        },
+                    })
+                }
+                res.setHeader(
+                    'Content-Disposition',
+                    'attachment; filename=' + filename
+                )
+                res.setHeader('Content-Type', meta.mimetype)
+                return res.status(statusCode.OK).send(source)
             } catch (error) {
                 return next(error)
             }
@@ -54,8 +76,12 @@ class Handler {
     public Pdf() {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
+                const responseType = req.headers['response-type'] as
+                    | string
+                    | undefined
+
                 const body = ValidateFormRequest(RequestPdf, req.body)
-                const { filename } = await this.usecase.Pdf(body)
+                const { filename, meta, source } = await this.usecase.Pdf(body)
 
                 this.logger.Info(statusCode[statusCode.OK], {
                     additional_info: this.http.AdditionalInfo(
@@ -64,14 +90,29 @@ class Handler {
                     ),
                 })
 
-                removeFile(this.minio, filename, body.seconds, this.logger)
-                const url = await this.minio.GetFileUrl(filename)
-
-                return res.status(statusCode.OK).json({
-                    data: {
-                        url: this.http.GetDomain(req) + `/download?url=${url}`,
-                    },
-                })
+                if (responseType !== 'arraybuffer') {
+                    await this.minio.Upload(
+                        source,
+                        filename,
+                        meta.size,
+                        meta.mimetype
+                    )
+                    removeFile(this.minio, filename, body.seconds, this.logger)
+                    const url = await this.minio.GetFileUrl(filename)
+                    return res.status(statusCode.OK).json({
+                        data: {
+                            url:
+                                this.http.GetDomain(req) +
+                                `/download?url=${url}`,
+                        },
+                    })
+                }
+                res.setHeader(
+                    'Content-Disposition',
+                    'attachment; filename=' + filename
+                )
+                res.setHeader('Content-Type', meta.mimetype)
+                return res.status(statusCode.OK).send(source)
             } catch (error) {
                 return next(error)
             }
@@ -86,8 +127,9 @@ class Handler {
                     | undefined
 
                 const body = ValidateFormRequest(RequestConvertImage, req.body)
-                const { meta, source } = await this.usecase.ConvertImage(body)
-                const { filename, size, mimetype } = meta
+                const { meta, source, filename } =
+                    await this.usecase.ConvertImage(body)
+                const { size, mimetype } = meta
 
                 this.logger.Info(statusCode[statusCode.OK], {
                     additional_info: this.http.AdditionalInfo(
@@ -109,6 +151,10 @@ class Handler {
                         },
                     })
                 }
+                res.setHeader(
+                    'Content-Disposition',
+                    'attachment; filename=' + filename
+                )
                 res.setHeader('Content-Type', meta.mimetype)
                 return res.status(statusCode.OK).send(source)
             } catch (error) {

@@ -29,7 +29,7 @@ class Usecase {
     ) {}
 
     private getFiles(extension: string) {
-        const filename = `${Date.now()}-${Math.random()}.${extension}`
+        const filename = `file-${Date.now()}.${extension}`
         const path = this.dir + '/' + filename
         return {
             filename,
@@ -57,13 +57,18 @@ class Usecase {
             const stats = fs.statSync(path)
             const mimetype = mime.lookup(filename) as string
             const source = readFileSync(path)
-            await this.minio.Upload(source, filename, stats.size, mimetype)
+            const meta = {
+                path,
+                size: stats.size,
+                mimetype,
+            }
 
             fs.rmSync(path)
 
             return {
                 filename,
-                path,
+                meta,
+                source,
             }
         } catch (error) {
             throw error
@@ -90,13 +95,18 @@ class Usecase {
             const stats = fs.statSync(path)
             const mimetype = mime.lookup(filename) as string
             const source = readFileSync(path)
-            await this.minio.Upload(source, filename, stats.size, mimetype)
+            const meta = {
+                path,
+                size: stats.size,
+                mimetype,
+            }
 
             fs.rmSync(path)
 
             return {
                 filename,
-                path,
+                meta,
+                source,
             }
         } catch (error) {
             throw error
@@ -125,9 +135,10 @@ class Usecase {
                     statusCode.BAD_REQUEST,
                     statusCode[statusCode.BAD_REQUEST]
                 )
+
             const optionResize: Resize = { resize, height, width }
 
-            const { source, meta } = await Sharp.Convert(
+            const { source, meta, filename } = await Sharp.Convert(
                 data,
                 convertTo,
                 quality,
@@ -135,6 +146,7 @@ class Usecase {
             )
 
             return {
+                filename,
                 meta,
                 source,
             }
@@ -168,8 +180,6 @@ class Usecase {
             const mimetype =
                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 
-            await this.minio.Upload(source, filename, size, mimetype)
-
             return {
                 filename,
                 meta: {
@@ -177,6 +187,7 @@ class Usecase {
                     size,
                     mimetype,
                 },
+                source,
             }
         } catch (error: any) {
             throw error
@@ -184,16 +195,16 @@ class Usecase {
     }
 
     public async Upload(body: RequestUpload) {
-        const { source, meta } = await Sharp.Convert(
+        const { source, meta, filename } = await Sharp.Convert(
             readFileSync(body.file.path),
             body.convertTo,
             body.quality
         )
 
-        const { filename, size, mimetype } = meta
+        const { size, mimetype } = meta
         await this.minio.Upload(source, filename, size, mimetype)
 
-        return { filename, meta }
+        return { filename, meta, source }
     }
 }
 
