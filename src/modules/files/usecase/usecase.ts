@@ -19,6 +19,7 @@ import {
     RegexContentTypeImage,
 } from '../../../helpers/regex'
 import Docxtemplater from '../../../pkg/docxtemplater'
+import { getFilename } from '../../../helpers/file'
 
 class Usecase {
     constructor(
@@ -29,7 +30,7 @@ class Usecase {
     ) {}
 
     private getFiles(extension: string) {
-        const filename = `file-${Date.now()}.${extension}`
+        const filename = getFilename(extension)
         const path = this.dir + '/' + filename
         return {
             filename,

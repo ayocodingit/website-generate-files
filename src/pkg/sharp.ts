@@ -1,4 +1,5 @@
 import sharp from 'sharp'
+import { getFilename } from '../helpers/file'
 
 export type Resize = {
     resize: boolean
@@ -8,14 +9,6 @@ export type Resize = {
 
 class Sharp {
     constructor() {}
-
-    private static getFilename(extension: string) {
-        const filename = `${Date.now()}-${Math.random()}.${extension}`
-
-        return {
-            filename,
-        }
-    }
 
     public static async Convert(
         source: Buffer,
@@ -34,7 +27,7 @@ class Sharp {
             quality,
         }).toBuffer({ resolveWithObject: true })
 
-        const { filename } = this.getFilename(info.format)
+        const filename = getFilename(info.format)
         const mimetype = 'image/' + info.format
 
         return {
