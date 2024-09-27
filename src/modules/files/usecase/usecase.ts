@@ -58,7 +58,6 @@ class Usecase {
             const mimetype = mime.lookup(filename) as string
             const source = readFileSync(path)
             const meta = {
-                path,
                 size: stats.size,
                 mimetype,
             }
@@ -96,7 +95,6 @@ class Usecase {
             const mimetype = mime.lookup(filename) as string
             const source = readFileSync(path)
             const meta = {
-                path,
                 size: stats.size,
                 mimetype,
             }
@@ -183,7 +181,6 @@ class Usecase {
             return {
                 filename,
                 meta: {
-                    filename,
                     size,
                     mimetype,
                 },

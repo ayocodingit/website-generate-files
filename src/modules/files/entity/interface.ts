@@ -51,3 +51,12 @@ export interface RequestUpload {
     quality: number
     convertTo: 'webp' | 'jpeg'
 }
+
+export type File = {
+    filename: string
+    source: Buffer
+    meta: {
+        size: number
+        mimetype: string
+    }
+}
