@@ -4,6 +4,7 @@ import {
     RequestConvertImage,
     RequestImage,
     RequestPdf,
+    RequestQrCode,
     RequestReplaceDoc,
     RequestUpload,
 } from '../entity/interface'
@@ -20,6 +21,7 @@ import {
 } from '../../../helpers/regex'
 import Docxtemplater from '../../../pkg/docxtemplater'
 import { getFilename } from '../../../helpers/file'
+import QRCode from 'qrcode' // Pastikan Anda sudah menginstal 'qrcode': npm install qrcode
 
 class Usecase {
     constructor(
@@ -190,6 +192,26 @@ class Usecase {
         } catch (error: any) {
             throw error
         }
+    }
+
+    public async QrCode({ text, format, width, margin }: RequestQrCode) {
+        const qrOptions:
+            | QRCode.QRCodeToBufferOptions
+            | QRCode.QRCodeToDataURLOptions = {
+            type: 'image/png',
+            errorCorrectionLevel: 'H',
+            width,
+            margin,
+        }
+
+        if (format === 'buffer') {
+            return QRCode.toBuffer(
+                text,
+                qrOptions as QRCode.QRCodeToBufferOptions
+            )
+        }
+
+        return QRCode.toDataURL(text, qrOptions)
     }
 
     public async Upload(body: RequestUpload) {

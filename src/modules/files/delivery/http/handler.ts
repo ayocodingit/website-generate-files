@@ -8,6 +8,7 @@ import {
     RequestConvertImage,
     RequestImage,
     RequestPdf,
+    RequestQrCode,
     RequestReplaceDoc,
     RequestUpload,
 } from '../../entity/schema'
@@ -123,6 +124,33 @@ class Handler {
                 })
 
                 return await this.responseFile(req, res, body.seconds, file)
+            } catch (error) {
+                return next(error)
+            }
+        }
+    }
+
+    public QrCode() {
+        return async (req: Request, res: Response, next: NextFunction) => {
+            try {
+                const body = ValidateFormRequest(RequestQrCode, req.body)
+                const qrOutput = await this.usecase.QrCode(body)
+
+                this.logger.Info(statusCode[statusCode.OK], {
+                    additional_info: this.http.AdditionalInfo(
+                        req,
+                        statusCode.OK
+                    ),
+                })
+
+                if (body.format === 'base64') {
+                    return res.status(statusCode.OK).json({
+                        data: qrOutput,
+                    })
+                }
+
+                res.setHeader('Content-Type', 'image/png')
+                return res.status(statusCode.OK).send(qrOutput)
             } catch (error) {
                 return next(error)
             }

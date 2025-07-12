@@ -60,3 +60,10 @@ export type File = {
         mimetype: string
     }
 }
+
+export type RequestQrCode = {
+    text: string
+    format: string
+    width: number
+    margin: number
+}

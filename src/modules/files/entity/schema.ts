@@ -68,3 +68,10 @@ export const RequestUpload = Joi.object({
     quality: Joi.number().min(1).max(100).optional().default(80),
     convertTo: Joi.string().valid('jpeg', 'webp').optional().default('webp'),
 })
+
+export const RequestQrCode = Joi.object({
+    text: Joi.string().required(),
+    format: Joi.string().valid('base64', 'buffer').optional().default('base64'),
+    width: Joi.number().min(100).max(300).default(200).optional(),
+    margin: Joi.number().min(1).max(3).default(1).optional(),
+})

@@ -44,6 +44,7 @@ class Files {
         Router.post('/convert-image', handler.ConvertImage())
         Router.post('/upload', this.http.Upload('file'), handler.Upload())
         Router.post('/replace-doc', handler.ReplaceDoc())
+        Router.post('/qrcode', handler.QrCode())
 
         this.http.SetRouter('/v1/', Router)
     }
